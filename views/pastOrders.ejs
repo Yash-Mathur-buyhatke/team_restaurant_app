@@ -10,19 +10,18 @@
     </head>
 
     <body>
-        <form action="/purchaseitems" method="post">
+        <form action="/pastorders" method="post">
         <table id="itemtable">
             <tr>
-                <th>item</th>
-                <th>price</th>
+                <th>Item</th>
+                <th>Address</th>
                 <th>Quantity</th>
+                <th>OrderId</th>
             </tr>
         </table>
-        <input type="text" name="address",placeholder="address for receiving">
-            <input type="submit" value="Submit">
-        </form>
-        <a href="/pastorders"> Past order</a>
         
-        <script src="/js/purchaseItems.js" async defer></script>
+        </form>
+        
+        <script src="/js/pastOrders.js" async defer></script>
     </body>
 </html>
