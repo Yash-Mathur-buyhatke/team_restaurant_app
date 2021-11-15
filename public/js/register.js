@@ -1,5 +1,17 @@
 console.log('reached')
 var addresses= [];
+// var adminCheck = document.querySelector('#admincheck');
+// adminCheck.addEventListener('change', function(event)
+//   {
+//       if (event.target.checked) {
+//           event.target.value=1
+//           console.log(event.target.value);
+//       }
+//       else {
+//         event.target.value=0
+//         console.log(event.target.value);
+//       }
+//   });
 
 const addAddress = () => {
   var address = document.getElementById("event").value;
