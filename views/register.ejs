@@ -18,11 +18,12 @@
             
 
             <form action="/register" method="post">
-                <label for="email">Email:</label>
-                <input type="text" id="email" name="email"><br><br>
+                <label for="userName">username(email):</label>
+                <input type="text" id="userName" name="userName"><br><br>
                 <label for="password">Password:</label>
                 <input type="text" id="password" name="password"><br><br>
-                <input type="submit" value="Submit">
+                <button type="button" onclick="submitButtonClicked()">Submit</button>
+                  <br><br><br>
                 <!-- <input type="hidden" name="isAdmin" value=0>
                 <input type="checkbox" name="isAdmin" id="admincheck" value=1>
                 
@@ -33,7 +34,7 @@
                 <ul id="sec">
                 </ul> -->
               </form>
-              <a href="/" type="none">Login</a>
+              <a href="/app/login" type="none">Login</a>
            
         </center>
         <script src="/js/register.js" async defer></script>

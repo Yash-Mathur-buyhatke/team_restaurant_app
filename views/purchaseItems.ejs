@@ -10,7 +10,7 @@
     </head>
 
     <body>
-        <form action="/purchaseitems" method="post">
+        <a href="/app/logout">logout</a>
         <table id="itemtable">
             <tr>
                 <th>item</th>
@@ -18,10 +18,12 @@
                 <th>Quantity</th>
             </tr>
         </table>
-        <input type="text" name="address",placeholder="address for receiving">
-            <input type="submit" value="Submit">
-        </form>
-        <a href="/pastorders"> Past order</a>
+        <input type="text" name="address" id="address",placeholder="address for receiving">
+        <p>Total: <h4 id="total">0</h4></p>
+        <button type="button" onclick="submitButtonClicked()">Submit</button>
+                  <br><br><br>
+
+        <a href="/app/user/history"> Past order</a>
         
         <script src="/js/purchaseItems.js" async defer></script>
     </body>
