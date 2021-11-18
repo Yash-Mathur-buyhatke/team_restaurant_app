@@ -43,9 +43,16 @@ const loginUserWithEmailAndPassword = (req, res) => {
             
             req.session.authenticated = true;
             req.session.userName = userName;
-            res.send({
-              msg:1
-            })
+            if(obj[0].isadmin===1) {
+              console.log("admin")
+              req.session.admin = true;
+              res.send({ msg:2})
+            }
+            else {
+              res.send({
+                msg:1
+              })
+            }
           
         }
       } else {

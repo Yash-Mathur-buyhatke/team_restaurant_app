@@ -20,6 +20,7 @@ const submitButtonClicked = () =>{
  .then(data=> data.json())
  .then(response=> {
      if(response.msg===1) window.location = '/app/user/purchaseitems'
+     if(response.msg===2) window.location = '/app/admin/orderconfirmation'
  })
 
 
