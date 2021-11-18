@@ -30,21 +30,21 @@ const port = process.env.PORT || 3000
 
 // routes 
 app.get('/app/logout',(req,res,next)=>{
-  try{
+  
     if(req.session.authenticated){
       req.session.destroy();
       res.clearCookie() 
-        res.send({
-          msg:"succesfully logged out"
-        })
+        res.status(200).render('login')
     }else{
-      return res.send("login first")
+      return res.status(401).send({ 
+        success: 0,
+        message: 'login first',
+        errors:[]
+      })
     } 
   }
-  catch (err) {
-    res.send({ msg: 'Something went wrong'})
-  }
-})
+)
+
 app.use("/app", require("./routes"));
 
 app.get('/',(req,res)=>{

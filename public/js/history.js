@@ -1,19 +1,23 @@
-console.log('pastOrders is accessible')
+// structuring done
+console.log("pastOrders is accessible");
 
-
-console.log('reashed')
-const table = document.querySelector('#itemtable');
-fetch('/app/items/history')
-  .then(response => response.json())
+console.log("reached");
+const table = document.querySelector("#itemtable");
+fetch("/app/items/history")
+  .then((response) => response.json())
   .then((data) => {
-      console.log(data)
-      content = table.innerHTML
-      var count = 0
-      for(var item in data){
-          count+=1
-          console.log(item , data[item])
-          content +=`<tr><td>${data[item].item}</td><td>${data[item].address}</td><td>${data[item].quantity}</td><td>${data[item].orderid}</td></tr>`
-          console.log(typeof data[item].name)
-        }
-      table.innerHTML=content
-  })
+    
+      
+      
+      content = table.innerHTML;
+      var count = 0;
+      for (var item in data.data) {
+        count += 1;
+        var obj = data.data[item];
+        content += `<tr><td>${obj.item}</td><td>${obj.address}</td><td>${obj.quantity}</td><td>${obj.orderid}</td></tr>`;
+        
+      }
+      table.innerHTML = content;
+      alert("history fetched!");
+    
+  });

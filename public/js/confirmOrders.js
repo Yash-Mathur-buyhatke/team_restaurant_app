@@ -1,3 +1,4 @@
+// structuring Done
 console.log('Reached here')
 const table = document.querySelector('#itemtable');
 function deliverButtonClicked(value){
@@ -16,7 +17,7 @@ function deliverButtonClicked(value){
       }
   }).then(data=> data.json())
  .then(response=> {
-     if(response.msg===1) {
+     if(response.success===1) {
       alert('Done')
       document.getElementById(`${value}row`).innerHTML=""
      }
@@ -31,11 +32,11 @@ fetch('/app/items/pending')
       
       content = table.innerHTML
       var count = 0
-      for(var item in data){
+      for(var item in data.data){
           count+=1
-          console.log(item , data[item])
+          var obj = data.data[item]
 
-          content +=`<tr id='${data[item].orderid}row'><td>${data[item].item}</td><td>${data[item].userName}</td><td>${data[item].address}</td><td>${data[item].quantity}</td><td>${data[item].orderid}</td><td><input type="button" value="Delivered" id=${data[item].orderid} onclick="deliverButtonClicked(this.id)"></td></tr>`
+          content +=`<tr id='${obj.orderid}row'><td>${obj.item}</td><td>${obj.username}</td><td>${obj.address}</td><td>${obj.quantity}</td><td>${obj.orderid}</td><td><input type="button" value="Delivered" id=${obj.orderid} onclick="deliverButtonClicked(this.id)"></td></tr>`
           
         }
       table.innerHTML=content

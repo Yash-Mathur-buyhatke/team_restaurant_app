@@ -1,3 +1,4 @@
+// structuring done
 console.log('reached')
 function submitButtonClicked() {
     var userName = document.getElementById('userName').value;
@@ -18,6 +19,6 @@ function submitButtonClicked() {
     })
      .then(data=> data.json())
      .then(response=> {
-         if(response.msg===1) window.location = '/app/login'
+         if(response.success===1) window.location = '/app/login'
      })
 }
