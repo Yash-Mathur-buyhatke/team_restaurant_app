@@ -16,7 +16,43 @@ fetch("/app/items/sell")
     }
     table.innerHTML = content;
   });
-function submitButtonClicked() {
+function payButtonClicked() {
+  // var total = 0;
+  // for (let [key, value] of totalItems) {
+  //   qty = document.getElementById(key).value;
+  //   if (qty != 0 && qty !=undefined) {
+  //     total += qty * totalItems.get(key)[0];
+  //     price = totalItems.get(key)[0];
+  //     totalItems.set(key, [price, qty]);
+  //   }
+  // }
+  // document.getElementById("total").textContent = total;
+  // totalItems.set("address", document.getElementById("address").value);
+  // var data = Object.fromEntries(totalItems); // Map to Json
+  // var y =new Map(Object.entries(data))             // Json to Map
+  // if (total == 0) return;
+  // fetch("/app/user/purchaseitems", {
+  //   // Adding method type
+  //   method: "POST",
+
+  //   // Adding body or contents to send
+  //   body: JSON.stringify({
+  //     data,
+  //   }),
+
+  //   // Adding headers to the request
+  //   headers: {
+  //     "Content-Type": "application/json; charset=UTF-8",
+  //   },
+  // })
+  //   .then((data) => data.json())
+  //   .then((response) => {
+  //     if (response.success === 1) makePayment(data);
+  //   });
+}
+
+// payment flow
+function makePayment(data){
   var total = 0;
   for (let [key, value] of totalItems) {
     qty = document.getElementById(key).value;
@@ -29,24 +65,71 @@ function submitButtonClicked() {
   document.getElementById("total").textContent = total;
   totalItems.set("address", document.getElementById("address").value);
   var data = Object.fromEntries(totalItems); // Map to Json
-  // var y =new Map(Object.entries(data))             // Json to Map
   if (total == 0) return;
   fetch("/app/user/purchaseitems", {
-    // Adding method type
-    method: "POST",
-
-    // Adding body or contents to send
-    body: JSON.stringify({
-      data,
-    }),
-
-    // Adding headers to the request
-    headers: {
-      "Content-Type": "application/json; charset=UTF-8",
-    },
-  })
-    .then((data) => data.json())
-    .then((response) => {
-      if (response.success === 1) window.location = "/app/user/orderplaced";
-    });
+        // Adding method type
+        method: "POST",
+    
+        // Adding body or contents to send
+        body: JSON.stringify({
+          data,
+        }),
+    
+        // Adding headers to the request
+        headers: {
+          "Content-Type": "application/json; charset=UTF-8",
+        },
+      })
+        .then((data) => data.json())
+        .then((response) => {
+          if (response.success === 1) {
+            const stripe = Stripe("pk_test_51JxOJ3SJcXKxPen0ZqMHRdxWIVfSWDrh7jT6zlCWEEYml4hgaUMmLHs5WBxLKIjANqbo6lySPivukPNnz2w96EIH00IdlqEz23")
+            fetch("/app/items/payment", {
+              // Adding method type
+              method: "POST",
+               
+              // Adding body or contents to send
+              body: JSON.stringify({
+                  // "product":{
+                  //   "name":"iphone14",
+                  //   "amount":10,
+                  //   "quantity":1
+                  // }
+                  data
+              }),
+               
+              // Adding headers to the request
+              headers: {
+                  'Content-Type': 'application/json; charset=UTF-8',
+              }
+          })
+           .then(data=> data.json())
+           .then(function(session){
+             stripe.redirectToCheckout({sessionId:session.id})
+           }).then(function(result){
+            
+             if(result.error) {
+               console.log(result)
+             }
+            
+             
+           }).catch(function(error){
+             console.log("error",error)
+           })
+          
+          };
+        });
+  
 }
+
+
+
+
+
+
+
+
+
+
+
+

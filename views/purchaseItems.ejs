@@ -7,6 +7,8 @@
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="/css/style.css">
+        <script src="https://js.stripe.com/v3/"></script>
+        <!-- <script src="https://checkout.razorpay.com/v1/checkout.js"></script> -->
     </head>
 
     <body>
@@ -20,9 +22,8 @@
         </table>
         <input type="text" name="address" id="address",placeholder="address for receiving">
         <p>Total: <h4 id="total">0</h4></p>
-        <button type="button" onclick="submitButtonClicked()">Submit</button>
-                  <br><br><br>
 
+        <button type="button" onclick="makePayment()">pay</button>
         <a href="/app/user/history"> Past order</a>
         
         <script src="/js/purchaseItems.js" async defer></script>

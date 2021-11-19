@@ -1,7 +1,11 @@
 // structuring done
 const dbConnection = require("../databaseConnection");
 const orderPlacedPage = (req, res) => {
-  if (req.session.authenticated) return res.status(200).render("orderPlaced");
+  if (req.session.authenticated) {
+    
+    
+    return res.status(200).render("orderPlaced")
+  }
   else
     res.status(401).send({
       success: 0,
