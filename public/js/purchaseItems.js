@@ -55,11 +55,7 @@ function makePayment(data){
                
               // Adding body or contents to send
               body: JSON.stringify({
-                  // "product":{
-                  //   "name":"iphone14",
-                  //   "amount":10,
-                  //   "quantity":1
-                  // }
+                  
                   data
               }),
                
@@ -76,8 +72,6 @@ function makePayment(data){
              if(result.error) {
                console.log(result)
              }
-            
-             
            }).catch(function(error){
              console.log("error",error)
            })
