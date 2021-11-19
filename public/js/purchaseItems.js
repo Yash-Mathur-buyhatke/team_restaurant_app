@@ -66,7 +66,7 @@ function makePayment(data){
           })
            .then(data=> data.json())
            .then(function(session){
-             stripe.redirectToCheckout({sessionId:session.id})
+             return stripe.redirectToCheckout({sessionId:session.id})
            }).then(function(result){
             
              if(result.error) {
