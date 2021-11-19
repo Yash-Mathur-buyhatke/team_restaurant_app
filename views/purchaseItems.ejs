@@ -23,7 +23,19 @@
         <input type="text" name="address" id="address",placeholder="address for receiving">
         <p>Total: <h4 id="total">0</h4></p>
 
-        <button type="button" onclick="makePayment()">pay</button>
+        <form action="/app/items/payment" method="POST" > 
+            <script
+                src="//checkout.stripe.com/v3/checkout.js"
+                class="stripe-button"
+                data-key="pk_test_51JxOJ3SJcXKxPen0ZqMHRdxWIVfSWDrh7jT6zlCWEEYml4hgaUMmLHs5WBxLKIjANqbo6lySPivukPNnz2w96EIH00IdlqEz23" 
+                data-amount="7000" 
+                data-currency="inr" 
+                data-name="Yash Mathur" 
+                data-description="Buy React.js Complete Course" 
+                data-locale="auto"
+                > 
+                </script> 
+            </form> 
         <a href="/app/user/history"> Past order</a>
         
         <script src="/js/purchaseItems.js" async defer></script>

@@ -6,32 +6,60 @@ const paymentCall =async (req, res)=>{
   const stripe = require('stripe')('sk_test_51JxOJ3SJcXKxPen0p4hFP9iZdQq8dpU1f4unqP0rU9r5hVjisKB3XfuNjuhK7vpO8wC1YZaX3qLC6bMMPygRX8gB00bjIugpZj')
   const product = req.body
   console.log(product)
-  console.log(product[0])
-  console.log(product[1])
-  console.log(product.name,product.amount,product.quantity)
-  const session = await stripe.checkout.sessions.create({
-    payment_method_types: ['card'],
-    line_items:[
-      { 
-        price_data:{
-          currency: 'inr',
-          product_data:{
-            name: "iphone3",
+  stripe.customers.create({
+    email:"yash@buyhatke.com",
+    source:req.body.stripeToken,
+    name:"yash MAthur",
+    address:{
+      line1:"Hsr layout, Banglore",
+      city:"Banglore",
+      country:"India"
+    }
+  }).then((customer) => {
+    console.log('1A')
+    return stripe.charges.create({
+      amount:100,
+      description:"web prject",
+      currency:'INR',
+      customer:customer.id,
+      receipt_email:"yash@buyhatke.com"
+    })
+  }).then((charge) => {
+    console.log('1B')
+    // res.send(charge)
+    if(charge.amount_captured==101){
+      res.send({msg:100})
+    }
+    else{
+      res.send(charge)
+    }
+  }).catch((err) => {
+    console.log('1C')
+    res.send(err)
+  })
+  // const session = await stripe.checkout.sessions.create({
+  //   payment_method_types: ['card'],
+  //   line_items:[
+  //     { 
+  //       price_data:{
+  //         currency: 'inr',
+  //         product_data:{
+  //           name: "iphone3",
             
-          },
-          unit_amount:1 *100,
+  //         },
+  //         unit_amount:1 *100,
 
-        },
-        quantity:1,
-      },
-    ],
-    mode: 'payment',
-    success_url: 'http://localhost:3000/app/user/orderplaced',
-    cancel_url: 'http://localhost:3000/app/login'
-  })
-  res.json({
-    id:session.id
-  })
+  //       },
+  //       quantity:1,
+  //     },
+  //   ],
+  //   mode: 'payment',
+  //   success_url: 'http://localhost:3000/app/user/orderplaced',
+  //   cancel_url: 'http://localhost:3000/app/login'
+  // })
+  // res.json({
+  //   id:session.id
+  // })
 }
 const itemsPurchased = (req,res) => {
   if(req.session.authenticated){
