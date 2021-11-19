@@ -1,30 +1,34 @@
 // structuring done
 const dbConnection = require('../databaseConnection')
 
+const packItemIntoJsonObject = (name,amount,quantity)=>{
+  var item = { 
+    price_data:{
+      currency: 'inr',
+      product_data:{
+        name: name,
+      },
+      unit_amount:amount *100,
+    },
+    quantity:quantity,
+  }
+  return item
+}
 const paymentCall =async (req, res)=>{
   console.log("here")
   const stripe = require('stripe')('sk_test_51JxOJ3SJcXKxPen0p4hFP9iZdQq8dpU1f4unqP0rU9r5hVjisKB3XfuNjuhK7vpO8wC1YZaX3qLC6bMMPygRX8gB00bjIugpZj')
-  const product = req.body
-  console.log(product)
-  console.log(product[0])
-  console.log(product[1])
-  console.log(product.name,product.amount,product.quantity)
+  var total = 0
+  var products = new Map(Object.entries(req.body.data)); // Json to Map
+  var items = []
+  //console.log(products)
+  for (let [key, value] of products) {
+      if(key!='address') items.push( packItemIntoJsonObject(key,products.get(key)[0],parseInt(products.get(key)[1])))
+    }
+  if(items.length<1) return
+
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ['card'],
-    line_items:[
-      { 
-        price_data:{
-          currency: 'inr',
-          product_data:{
-            name: "iphone3",
-            
-          },
-          unit_amount:1 *100,
-
-        },
-        quantity:1,
-      },
-    ],
+    line_items:items,
     mode: 'payment',
     success_url: 'http://localhost:3000/app/user/orderplaced',
     cancel_url: 'http://localhost:3000/app/login'
