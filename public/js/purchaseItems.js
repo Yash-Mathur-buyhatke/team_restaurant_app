@@ -5,7 +5,6 @@ let totalItems = new Map();
 fetch("/app/items/sell")
   .then((response) => response.json())
   .then((data) => {
-    
     content = table.innerHTML;
     var count = 0;
     for (var item in data.data) {
@@ -17,11 +16,11 @@ fetch("/app/items/sell")
     table.innerHTML = content;
   });
 // payment flow
-function makePayment(data){
+function makePayment(data) {
   var total = 0;
   for (let [key, value] of totalItems) {
     qty = document.getElementById(key).value;
-    if (qty != 0 && qty !=undefined) {
+    if (qty != 0 && qty != undefined) {
       total += qty * totalItems.get(key)[0];
       price = totalItems.get(key)[0];
       totalItems.set(key, [price, qty]);
@@ -32,63 +31,77 @@ function makePayment(data){
   var data = Object.fromEntries(totalItems); // Map to Json
   if (total == 0) return;
   fetch("/app/user/purchaseitems", {
-        // Adding method type
-        method: "POST",
-    
-        // Adding body or contents to send
-        body: JSON.stringify({
-          data,
-        }),
-    
-        // Adding headers to the request
-        headers: {
-          "Content-Type": "application/json; charset=UTF-8",
-        },
-      })
-        .then((data) => data.json())
-        .then((response) => {
-          if (response.success === 1) {
-            const stripe = Stripe("pk_test_51JxOJ3SJcXKxPen0ZqMHRdxWIVfSWDrh7jT6zlCWEEYml4hgaUMmLHs5WBxLKIjANqbo6lySPivukPNnz2w96EIH00IdlqEz23")
-            fetch("/app/items/payment", {
-              // Adding method type
-              method: "POST",
-               
-              // Adding body or contents to send
-              body: JSON.stringify({
-                  
-                  data
-              }),
-               
-              // Adding headers to the request
-              headers: {
-                  'Content-Type': 'application/json; charset=UTF-8',
-              }
+    // Adding method type
+    method: "POST",
+
+    // Adding body or contents to send
+    body: JSON.stringify({
+      data,
+    }),
+
+    // Adding headers to the request
+    headers: {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+  })
+    .then((data) => data.json())
+    .then((response) => {
+      if (response.success === 1) {
+        const stripe = Stripe(
+          "pk_test_51JxOJ3SJcXKxPen0ZqMHRdxWIVfSWDrh7jT6zlCWEEYml4hgaUMmLHs5WBxLKIjANqbo6lySPivukPNnz2w96EIH00IdlqEz23"
+        );
+        fetch("/app/items/payment", {
+          // Adding method type
+          method: "POST",
+
+          // Adding body or contents to send
+          body: JSON.stringify({
+            data,
+          }),
+
+          // Adding headers to the request
+          headers: {
+            "Content-Type": "application/json; charset=UTF-8",
+          },
+        })
+          .then((data) => data.json())
+          .then(function (session) {
+            return stripe.redirectToCheckout({ sessionId: session.id });
           })
-           .then(data=> data.json())
-           .then(function(session){
-             return stripe.redirectToCheckout({sessionId:session.id})
-           }).then(function(result){
-            
-             if(result.error) {
-               console.log(result)
-             }
-           }).catch(function(error){
-             console.log("error",error)
-           })
-          
-          };
-        });
-  
+          .then(function (result) {
+            if (result.error) {
+              console.log(result);
+            } else {
+              fetch("/app/payments/configure", {
+                // Adding method type
+                method: "POST",
+
+                // Adding body or contents to send
+                body: JSON.stringify({
+                  transaction_id:"qwe",
+                  item:"dsf",
+                  quantity:1,
+                  price:12,
+                  date:"657/56"
+                }),
+
+                // Adding headers to the request
+                headers: {
+                  "Content-Type": "application/json; charset=UTF-8",
+                },
+              })
+                .then((data) => data.json())
+                .then((response) => {
+                  if (
+                    response.success === 1
+                  )
+                    window.location = "/app/login";
+                });
+            }
+          })
+          .catch(function (error) {
+            console.log("error", error);
+          });
+      }
+    });
 }
-
-
-
-
-
-
-
-
-
-
-
-
