@@ -1,65 +1,65 @@
 // structuring done
 const dbConnection = require('../databaseConnection')
+const stripe = require('stripe')("sk_test_51JxOJ3SJcXKxPen0p4hFP9iZdQq8dpU1f4unqP0rU9r5hVjisKB3XfuNjuhK7vpO8wC1YZaX3qLC6bMMPygRX8gB00bjIugpZj")
 
+const itemAsJsonMaker= (name,qty,price)=>{
+  return {
+    
+    quantity:qty,
+    price:{
+      unit_amount:price,
+      currency:"inr",
+
+    }
+  }
+}
 const paymentCall =async (req, res)=>{
-  console.log("here")
-  const stripe = require('stripe')('sk_test_51JxOJ3SJcXKxPen0p4hFP9iZdQq8dpU1f4unqP0rU9r5hVjisKB3XfuNjuhK7vpO8wC1YZaX3qLC6bMMPygRX8gB00bjIugpZj')
-  const product = req.body
-  console.log(product)
-  stripe.customers.create({
-    email:"yash@buyhatke.com",
-    source:req.body.stripeToken,
-    name:"yash MAthur",
-    address:{
-      line1:"Hsr layout, Banglore",
-      city:"Banglore",
-      country:"India"
-    }
-  }).then((customer) => {
-    console.log('1A')
-    return stripe.charges.create({
-      amount:100,
-      description:"web prject",
-      currency:'INR',
-      customer:customer.id,
-      receipt_email:"yash@buyhatke.com"
-    })
-  }).then((charge) => {
-    console.log('1B')
-    // res.send(charge)
-    if(charge.amount_captured==101){
-      res.send({msg:100})
-    }
-    else{
-      res.send(charge)
-    }
-  }).catch((err) => {
-    console.log('1C')
-    res.send(err)
+  var data = req.body.token
+  
+  var items = new Map(Object.entries(data.items_detail)); // Json to map
+  if (data.id.length<4) res.status(400).send({
+    success:0,
+    message:"something went wrong with the payment process try again!",
+    errors:[]
   })
-  // const session = await stripe.checkout.sessions.create({
-  //   payment_method_types: ['card'],
-  //   line_items:[
-  //     { 
-  //       price_data:{
-  //         currency: 'inr',
-  //         product_data:{
-  //           name: "iphone3",
-            
-  //         },
-  //         unit_amount:1 *100,
-
-  //       },
-  //       quantity:1,
-  //     },
-  //   ],
-  //   mode: 'payment',
-  //   success_url: 'http://localhost:3000/app/user/orderplaced',
-  //   cancel_url: 'http://localhost:3000/app/login'
-  // })
-  // res.json({
-  //   id:session.id
-  // })
+  var amount = 0
+  itemArray=[]
+  for (let [key, value] of items) {
+    if(key!='address'){
+      itemArray.push(itemAsJsonMaker(key,parseInt(items.get(key)[1]),items.get(key)[0]))
+      amount += parseInt(items.get(key)[1])*items.get(key)[0]
+    }
+  }
+  
+  stripe.charges.create({
+    amount:amount,
+    source:data.id,
+    currency:'inr',
+    
+    // invoice:{
+    //   lines:{
+    //     data:itemArray
+    //   }
+    // }
+  
+  }).then(function(){
+    console.log("success")
+    
+    res.status(200).send({
+      success:1,
+      message:"successfully paid",
+      data:"",
+      totalCount:""
+      
+    })
+  }).catch(function(){
+    console.log("failes")
+    res.status(400).send({
+      success:0,
+      message:"Payment Can't be made right now",
+      errors:[]
+    })
+  })
 }
 const itemsPurchased = (req,res) => {
   if(req.session.authenticated){
