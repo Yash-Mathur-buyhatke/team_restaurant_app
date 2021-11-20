@@ -53,6 +53,7 @@ function makePayment(data){
         })
          .then(data=> data.json())
          .then(response=> {
+           console.log(response)
              if(response.success===1) alert(response.message)
              
          })
@@ -63,60 +64,7 @@ function makePayment(data){
   stripeHandler.open({
     amount:total,
   })
-  return
-  if (total == 0) return;
-
-  const stripe = Stripe("pk_test_51JxOJ3SJcXKxPen0ZqMHRdxWIVfSWDrh7jT6zlCWEEYml4hgaUMmLHs5WBxLKIjANqbo6lySPivukPNnz2w96EIH00IdlqEz23")
-            fetch("/app/items/payment", {
-              // Adding method type
-              method: "POST",
-               
-              // Adding body or contents to send
-              body: JSON.stringify({
-                  
-                  data
-              }),
-               
-              // Adding headers to the request
-              headers: {
-                  'Content-Type': 'application/json; charset=UTF-8',
-              }
-          })
-           .then(data=> data.json())
-           .then(function(session){
-             stripe.redirectToCheckout({sessionId:session.id})
-           }).then(function(result){
-            
-             if(result.error) {
-               console.log(result)
-             }
-            
-             
-           }).catch(function(error){
-             console.log("error",error)
-           })
-           return
-  fetch("/app/user/purchaseitems", {
-        // Adding method type
-        method: "POST",
-    
-        // Adding body or contents to send
-        body: JSON.stringify({
-          data,
-        }),
-    
-        // Adding headers to the request
-        headers: {
-          "Content-Type": "application/json; charset=UTF-8",
-        },
-      })
-        .then((data) => data.json())
-        .then((response) => {
-          if (response.success === 1) {
-            
-          
-          };
-        });
+  
   
 }
 

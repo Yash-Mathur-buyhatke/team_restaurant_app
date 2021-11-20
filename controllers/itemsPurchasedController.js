@@ -2,6 +2,41 @@
 const dbConnection = require('../databaseConnection')
 const stripe = require('stripe')("sk_test_51JxOJ3SJcXKxPen0p4hFP9iZdQq8dpU1f4unqP0rU9r5hVjisKB3XfuNjuhK7vpO8wC1YZaX3qLC6bMMPygRX8gB00bjIugpZj")
 
+const purchaseItemsForUser = (data,userName) => {
+  var count = 0;
+  
+
+  for (let [item, value] of data) {
+
+    var address = data.get("address");
+    if (item != "address") {
+      console.log(address,item,userName,data.get(item)[1],0)
+      let sql = `INSERT INTO orders(address,item,username,quantity,status) values('${address}','${item}','${userName}','${data.get(item)[1]}',0)`;
+      dbConnection.query(sql, (error, result) => {
+        if (error) {
+          console.log(error)
+          return {
+            
+            success: 0,
+            message: "Something might happend wrong with my sql query!",
+            errors: [{ message: `${error}` }],
+          };
+        } else {
+          
+          count++;
+        }
+      });
+    }
+  }
+  console.log('bro',count)
+  return {
+    success: 1,
+    message: "records updated",
+    data: [],
+    totalCount: count,
+  };
+};
+
 const itemAsJsonMaker= (name,qty,price)=>{
   return {
     
@@ -42,16 +77,23 @@ const paymentCall =async (req, res)=>{
     //   }
     // }
   
-  }).then(function(){
+  }).then(async function() {
     console.log("success")
     
-    res.status(200).send({
-      success:1,
-      message:"successfully paid",
-      data:"",
-      totalCount:""
-      
-    })
+    var output = await purchaseItemsForUser(items,req.session.userName)
+    if(output.success===1){
+      res.status(200).send({
+        success:1,
+        message:"successfully paid",
+        data:"",
+        totalCount:""
+        
+      })
+    }
+    else{
+      return output
+    }
+    
   }).catch(function(){
     console.log("failes")
     res.status(400).send({
