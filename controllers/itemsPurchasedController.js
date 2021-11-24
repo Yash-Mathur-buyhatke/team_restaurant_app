@@ -4,6 +4,7 @@ const responseGen = require('./responseGenerator')
 const dbConnection = require('../databaseConnection')
 const stripe = require('stripe')("sk_test_51JxOJ3SJcXKxPen0p4hFP9iZdQq8dpU1f4unqP0rU9r5hVjisKB3XfuNjuhK7vpO8wC1YZaX3qLC6bMMPygRX8gB00bjIugpZj")
 
+
 const purchaseItemsForUser = (data,userName) => {
   var count = 0;
   
@@ -58,6 +59,7 @@ const paymentCall =async (req, res)=>{
     success:0,
     message:"something went wrong with the payment process try again!",
     errors:[]
+
   })
   var amount = 0
   itemArray=[]

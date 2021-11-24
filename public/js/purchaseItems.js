@@ -17,8 +17,6 @@ fetch("/app/items/sell")
     table.innerHTML = content;
   });
 
-  
-
 // payment flow
 function makePayment(data){
   var total = 0;
@@ -33,6 +31,7 @@ function makePayment(data){
   document.getElementById("total").textContent = total;
   totalItems.set("address", document.getElementById("address").value);
   var data = Object.fromEntries(totalItems); // Map to Json
+
   console.log(data)
   var stripeHandler = StripeCheckout.configure(
     { 
@@ -54,18 +53,15 @@ function makePayment(data){
          .then(data=> data.json())
          .then(response=> {
            console.log(response)
-             if(response.success===1) alert(response.message)
-             
+             if(response.success===1) alert(response.message)   
          })
       }
-
     }
   );
   stripeHandler.open({
     amount:total,
   })
-  
-  
+
 }
 
 
