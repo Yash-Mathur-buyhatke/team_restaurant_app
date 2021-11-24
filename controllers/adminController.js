@@ -1,4 +1,5 @@
 
+
 // structuring
 const orderConfirmationPage = (req, res) => {
   res.render("confirmOrders");
