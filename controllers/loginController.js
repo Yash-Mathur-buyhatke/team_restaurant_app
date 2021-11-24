@@ -1,7 +1,8 @@
 //structuring done
+// response added
 const dbConnection = require("../databaseConnection");
 var crypto = require("crypto");
-
+const responseGen = require("../responseGen");
 const comparePassword = async (req, res, password, hashedPassword) => {
   try {
     const encodedPassword = crypto
@@ -20,23 +21,10 @@ const loginUserWithEmailAndPassword = (req, res) => {
 
   try {
     if (req.session.authenticated) {
-      return res.status(200).send({
-        success: 1,
-        message: "you signed in",
-        data: [],
-        totalCount: 0,
-      });
+      responseGen.generatePositiveReponse(req,res,"you signed in!",[],0,200);
     } else {
       if (userName === undefined || userName === "") {
-        return res.status(401).send({
-          success: 0,
-          message: "failed",
-          errors: [
-            {
-              message: `either you are not authorized or you have not logged in!`,
-            },
-          ],
-        });
+        responseGen.generateNegativeReponse(req,res,"failed",`either you are not authorized or you have not logged in!`,401);
       }
       let sql = `Select * from user where username = ?`;
       dbConnection.query(sql, [userName], async (error, result) => {
@@ -46,50 +34,24 @@ const loginUserWithEmailAndPassword = (req, res) => {
           let flag = await comparePassword(req, res, password, obj[0].password);
 
           if (!flag) {
-            return res.status(400).send({
-              success: 0,
-              message: "password was incorrect",
-              errors: [],
-            });
+            responseGen.generateNegativeReponse(req,res,"password was incorrect!","",400);
           } else {
             req.session.authenticated = true;
             req.session.userName = userName;
             if (obj[0].isadmin === 1) {
               req.session.admin = true;
-              return res.status(200).send({
-                success: 1,
-                message: "admin found",
-                data: [],
-                totalCount: 0,
-              });
+              responseGen.generatePositiveReponse(req,res,"admin found",[],0,200); 
             } else {
-              return res.status(200).send({
-                success: 1,
-                message: "user found",
-                data: [],
-                totalCount: 0,
-              });
+              responseGen.generatePositiveReponse(req,res,"user found",[],0,200);
             }
           }
         } else {
-          return res.status(401).send({
-            success: 0,
-            message: "failed",
-            errors: [
-              {
-                message: `either you are not authorized or you have not logged in!`,
-              },
-            ],
-          });
+          responseGen.generateNegativeReponse(req,res,"failed",`either you are not authorized or you have not logged in!`,401);
         }
       });
     }
   } catch (err) {
-    return res.status(400).send({
-      success: 0,
-      message: "failed",
-      errors: [{ message: `${err}` }],
-    });
+    responseGen.generateNegativeReponse(req,res,"failed",err,400);
   }
 };
 

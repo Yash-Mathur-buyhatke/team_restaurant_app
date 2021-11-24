@@ -1,5 +1,6 @@
-
+const responseGen = require('./responseGenerator')
 // structuring done
+// response added
 const dbConnection = require("../databaseConnection");
 const itemsToBeDelivered = (req, res) => {
   if (req.session.authenticated && req.session.admin) {
@@ -8,27 +9,13 @@ const itemsToBeDelivered = (req, res) => {
 
     dbConnection.query(sql, async (error, result) => {
       if (result)
-        res.status(200).send({
-          success: 1,
-          message: "record updated",
-          data: [],
-          totalCount: 1,
-        });
+        responseGen.generatePositiveReponse(req,res,"recoed updated",[],1,200);
       else
-        res.status(400).send({
-          success: 0,
-          message: "Something might happend wrong with my sql query!",
-          errors: [{ message: `${error}` }],
-        });
+        responseGen.generateNegativeReponse(req,res,"something might happened wrong with my sql",error,400);
+        
     });
   } else {
-    res.status(401).send({
-      success: 0,
-      message: "failed",
-      errors: [
-        { message: `either you are not authorized or you have not logged in!` },
-      ],
-    });
+    responseGen.generateNegativeReponse(req,res,"failed",`either you are not authorized or you have not logged in!`,401);
   }
 };
 

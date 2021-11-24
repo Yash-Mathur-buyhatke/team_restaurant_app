@@ -1,4 +1,6 @@
 // structuring Done
+// responde added
+const responseGen = require('./responseGenerator')
 const { body, validationResult } = require("express-validator");
 const crypto = require("crypto");
 const dbConnection = require("../databaseConnection");
@@ -17,33 +19,22 @@ const encryptPassword = async (req, res, password) => {
 const addPerson = async (req, res, userName, password) => {
   var encryptedPassword = await encryptPassword(req, res, password);
   if (encryptedPassword == undefined || encryptedPassword == "")
-    return res.status(400).send({
-      success: 0,
-      message: "password can't be hashed",
-      errors: [],
-    });
+  responseGen.generateNegativeReponse(req,res,"password can't be hashed","",400);
   var sql = `INSERT INTO user (username,password,isadmin) VALUES('${userName}','${encryptedPassword}',0);`;
 
   await dbConnection.query(sql, async (error, result) => {
     if (result) {
-      return res.status(200).send({
-        success: 1,
-        message: "record added successfully",
-        data: [],
-        totalCount: 1,
-      });
+      responseGen.generatePositiveReponse(req,res,"record added successfully",[],1,200);
+
     } else {
-      return res.status(400).send({
-        success: 0,
-        message: "something went wrong with sql query!",
-        errors: [{ message: `${error}` }],
-      });
+      responseGen.generateNegativeReponse(req,res,"something might happened wrong with my sql query",error,400);
     }
   });
 };
 const registerNewUser = (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
+    
     return res.status(400).send({
       success: 0,
       message: "failed",
@@ -56,13 +47,7 @@ const registerNewUser = (req, res) => {
   try {
     addPerson(req, res, userName, password, 0);
   } catch (err) {
-    return res.status(400).send({
-      success: 0,
-      message: "failed",
-      errors: [
-        { message: `${err}` },
-      ],
-    });
+    responseGen.generateNegativeReponse(req,res,"failed",err,400);
   }
 };
 
