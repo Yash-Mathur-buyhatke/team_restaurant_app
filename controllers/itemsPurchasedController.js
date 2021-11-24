@@ -1,3 +1,5 @@
+const responseGen = require('./responseGenerator')
+
 // structuring done
 const dbConnection = require('../databaseConnection')
 const stripe = require('stripe')("sk_test_51JxOJ3SJcXKxPen0p4hFP9iZdQq8dpU1f4unqP0rU9r5hVjisKB3XfuNjuhK7vpO8wC1YZaX3qLC6bMMPygRX8gB00bjIugpZj")
@@ -28,7 +30,7 @@ const purchaseItemsForUser = (data,userName) => {
       });
     }
   }
-  console.log('bro',count)
+
   return {
     success: 1,
     message: "records updated",
