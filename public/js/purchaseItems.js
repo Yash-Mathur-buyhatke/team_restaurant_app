@@ -16,6 +16,7 @@ fetch("/app/items/sell")
     }
     table.innerHTML = content;
   });
+
 // payment flow
 function makePayment(data){
   var total = 0;
@@ -30,55 +31,37 @@ function makePayment(data){
   document.getElementById("total").textContent = total;
   totalItems.set("address", document.getElementById("address").value);
   var data = Object.fromEntries(totalItems); // Map to Json
-  if (total == 0) return;
-  fetch("/app/user/purchaseitems", {
-        // Adding method type
-        method: "POST",
-    
-        // Adding body or contents to send
-        body: JSON.stringify({
-          data,
-        }),
-    
-        // Adding headers to the request
-        headers: {
-          "Content-Type": "application/json; charset=UTF-8",
-        },
-      })
-        .then((data) => data.json())
-        .then((response) => {
-          if (response.success === 1) {
-            const stripe = Stripe("pk_test_51JxOJ3SJcXKxPen0ZqMHRdxWIVfSWDrh7jT6zlCWEEYml4hgaUMmLHs5WBxLKIjANqbo6lySPivukPNnz2w96EIH00IdlqEz23")
-            fetch("/app/items/payment", {
-              // Adding method type
-              method: "POST",
-               
-              // Adding body or contents to send
-              body: JSON.stringify({
-                  
-                  data
-              }),
-               
-              // Adding headers to the request
-              headers: {
-                  'Content-Type': 'application/json; charset=UTF-8',
-              }
-          })
-           .then(data=> data.json())
-           .then(function(session){
-             stripe.redirectToCheckout({sessionId:session.id})
-           }).then(function(result){
-            
-             if(result.error) {
-               console.log(result)
-             }
-           }).catch(function(error){
-             console.log("error",error)
-           })
-          
-          };
-        });
-  
+
+  console.log(data)
+  var stripeHandler = StripeCheckout.configure(
+    { 
+      key: "pk_test_51JxOJ3SJcXKxPen0ZqMHRdxWIVfSWDrh7jT6zlCWEEYml4hgaUMmLHs5WBxLKIjANqbo6lySPivukPNnz2w96EIH00IdlqEz23", //publishable key
+      locale:'en',
+      token:function(token){
+          token["items_detail"]=data
+          fetch("/app/items/payment", {
+            // Adding method type
+           method: "POST",            
+            // Adding body or contents to send
+            body: JSON.stringify({
+                token
+            }),        
+            headers: {
+                'Content-Type': 'application/json; charset=UTF-8',
+            }
+        })
+         .then(data=> data.json())
+         .then(response=> {
+           console.log(response)
+             if(response.success===1) alert(response.message)   
+         })
+      }
+    }
+  );
+  stripeHandler.open({
+    amount:total,
+  })
+
 }
 
 

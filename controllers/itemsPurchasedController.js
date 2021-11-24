@@ -1,40 +1,110 @@
+const responseGen = require('./responseGenerator')
+
 // structuring done
 const dbConnection = require('../databaseConnection')
+const stripe = require('stripe')("sk_test_51JxOJ3SJcXKxPen0p4hFP9iZdQq8dpU1f4unqP0rU9r5hVjisKB3XfuNjuhK7vpO8wC1YZaX3qLC6bMMPygRX8gB00bjIugpZj")
 
-const packItemIntoJsonObject = (name,amount,quantity)=>{
-  var item = { 
-    price_data:{
-      currency: 'inr',
-      product_data:{
-        name: name,
-      },
-      unit_amount:amount *100,
-    },
-    quantity:quantity,
+
+const purchaseItemsForUser = (data,userName) => {
+  var count = 0;
+  
+
+  for (let [item, value] of data) {
+
+    var address = data.get("address");
+    if (item != "address") {
+      console.log(address,item,userName,data.get(item)[1],0)
+      let sql = `INSERT INTO orders(address,item,username,quantity,status) values('${address}','${item}','${userName}','${data.get(item)[1]}',0)`;
+      dbConnection.query(sql, (error, result) => {
+        if (error) {
+          console.log(error)
+          return {
+            
+            success: 0,
+            message: "Something might happend wrong with my sql query!",
+            errors: [{ message: `${error}` }],
+          };
+        } else {
+          
+          count++;
+        }
+      });
+    }
   }
-  return item
+
+  return {
+    success: 1,
+    message: "records updated",
+    data: [],
+    totalCount: count,
+  };
+};
+
+const itemAsJsonMaker= (name,qty,price)=>{
+  return {
+    
+    quantity:qty,
+    price:{
+      unit_amount:price,
+      currency:"inr",
+
+    }
+  }
 }
 const paymentCall =async (req, res)=>{
-  console.log("here")
-  const stripe = require('stripe')('sk_test_51JxOJ3SJcXKxPen0p4hFP9iZdQq8dpU1f4unqP0rU9r5hVjisKB3XfuNjuhK7vpO8wC1YZaX3qLC6bMMPygRX8gB00bjIugpZj')
-  var total = 0
-  var products = new Map(Object.entries(req.body.data)); // Json to Map
-  var items = []
-  //console.log(products)
-  for (let [key, value] of products) {
-      if(key!='address') items.push( packItemIntoJsonObject(key,products.get(key)[0],parseInt(products.get(key)[1])))
-    }
-  if(items.length<1) return
+  var data = req.body.token
+  
+  var items = new Map(Object.entries(data.items_detail)); // Json to map
+  if (data.id.length<4) res.status(400).send({
+    success:0,
+    message:"something went wrong with the payment process try again!",
+    errors:[]
 
-  const session = await stripe.checkout.sessions.create({
-    payment_method_types: ['card'],
-    line_items:items,
-    mode: 'payment',
-    success_url: 'http://localhost:3000/app/user/orderplaced',
-    cancel_url: 'http://localhost:3000/app/login'
   })
-  res.json({
-    id:session.id
+  var amount = 0
+  itemArray=[]
+  for (let [key, value] of items) {
+    if(key!='address'){
+      itemArray.push(itemAsJsonMaker(key,parseInt(items.get(key)[1]),items.get(key)[0]))
+      amount += parseInt(items.get(key)[1])*items.get(key)[0]
+    }
+  }
+  
+  stripe.charges.create({
+    amount:amount,
+    source:data.id,
+    currency:'inr',
+    
+    // invoice:{
+    //   lines:{
+    //     data:itemArray
+    //   }
+    // }
+  
+  }).then(async function() {
+    console.log("success")
+    
+    var output = await purchaseItemsForUser(items,req.session.userName)
+    if(output.success===1){
+      res.status(200).send({
+        success:1,
+        message:"successfully paid",
+        data:"",
+        totalCount:""
+        
+      })
+    }
+    else{
+      return output
+    }
+    
+  }).catch(function(){
+    console.log("failes")
+    res.status(400).send({
+      success:0,
+      message:"Payment Can't be made right now",
+      errors:[]
+    })
   })
 }
 const itemsPurchased = (req,res) => {
