@@ -1,5 +1,5 @@
 // structuring Done
-// responde added
+// response added
 const responseGen = require('./responseGenerator')
 const { body, validationResult } = require("express-validator");
 const crypto = require("crypto");
@@ -19,15 +19,15 @@ const encryptPassword = async (req, res, password) => {
 const addPerson = async (req, res, userName, password) => {
   var encryptedPassword = await encryptPassword(req, res, password);
   if (encryptedPassword == undefined || encryptedPassword == "")
-  responseGen.generateNegativeReponse(req,res,"password can't be hashed","",400);
-  var sql = `INSERT INTO user (username,password,isadmin) VALUES('${userName}','${encryptedPassword}',0);`;
+  responseGen.generateNegativeResponse(req,res,"password can't be hashed","",400);
+  var sql = `INSERT INTO users (username,password,isadmin) VALUES('${userName}','${encryptedPassword}',0);`;
 
   await dbConnection.query(sql, async (error, result) => {
     if (result) {
-      responseGen.generatePositiveReponse(req,res,"record added successfully",[],1,200);
+      responseGen.generatePositiveResponse(req,res,"record added successfully",[],1,200);
 
     } else {
-      responseGen.generateNegativeReponse(req,res,"something might happened wrong with my sql query",error,400);
+      responseGen.generateNegativeResponse(req,res,"something might happened wrong with my sql query",error,400);
     }
   });
 };
@@ -47,7 +47,7 @@ const registerNewUser = (req, res) => {
   try {
     addPerson(req, res, userName, password, 0);
   } catch (err) {
-    responseGen.generateNegativeReponse(req,res,"failed",err,400);
+    responseGen.generateNegativeResponse(req,res,"failed",err,400);
   }
 };
 

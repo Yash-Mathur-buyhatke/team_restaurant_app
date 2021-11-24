@@ -3,7 +3,7 @@ console.log("pastOrders is accessible");
 
 console.log("reached");
 const table = document.querySelector("#itemtable");
-fetch("/app/items/history")
+fetch("/app/items/delivered")
   .then((response) => response.json())
   .then((data) => {
     
@@ -14,7 +14,7 @@ fetch("/app/items/history")
       for (var item in data.data) {
         count += 1;
         var obj = data.data[item];
-        content += `<tr><td>${obj.item}</td><td>${obj.address}</td><td>${obj.quantity}</td><td>${obj.orderid}</td></tr>`;
+        content += `<tr><td>${obj.items}</td><td>${obj.address}</td><td>${obj.quantity}</td><td>${obj.orderid}</td></tr>`;
         
       }
       table.innerHTML = content;

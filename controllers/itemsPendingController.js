@@ -9,7 +9,7 @@ const itemsPending = (req, res) => {
     dbConnection.query(sql, async (error, result) => {
       if (result) {
         var size = result.length;
-        responseGen.generatePositiveReponse(
+        responseGen.generatePositiveResponse(
           req,
           res,
           "records fetched successfully",
@@ -18,7 +18,7 @@ const itemsPending = (req, res) => {
           200
         );
       } else {
-        responseGen.generateNegativeReponse(
+        responseGen.generateNegativeResponse(
           req,
           res,
           "something might happened wrong with my sql query!",
@@ -27,8 +27,34 @@ const itemsPending = (req, res) => {
         );
       }
     });
-  } else {
-    responseGen.generateNegativeReponse(
+  } 
+  else if (req.session.authenticated){
+    const sql = `SELECT * FROM ORDERS WHERE status=0 AND uid=${req.session.uid};`;
+
+    dbConnection.query(sql, async (error, result) => {
+      if (result) {
+        var size = result.length;
+        responseGen.generatePositiveResponse(
+          req,
+          res,
+          "records fetched successfully",
+          result,
+          size,
+          200
+        );
+      } else {
+        responseGen.generateNegativeResponse(
+          req,
+          res,
+          "something might happened wrong with my sql query!",
+          error,
+          400
+        );
+      }
+    });
+  }
+  else {
+    responseGen.generateNegativeResponse(
       req,
       res,
       "failed",

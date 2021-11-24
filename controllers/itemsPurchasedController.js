@@ -18,7 +18,7 @@ const purchaseItemsForUser = (req, res, data, userName) => {
       }',0)`;
       dbConnection.query(sql, (error, result) => {
         if (error) {
-          responseGen.generateNegativeReponse(
+          responseGen.generateNegativeResponse(
             req,
             res,
             "something might happened wrong with my sql query",
@@ -31,7 +31,7 @@ const purchaseItemsForUser = (req, res, data, userName) => {
       });
     }
   }
-  responseGen.generatePositiveReponse(
+  responseGen.generatePositiveResponse(
     req,
     res,
     "records updated",
@@ -55,7 +55,7 @@ const paymentCall = async (req, res) => {
 
   var items = new Map(Object.entries(data.items_detail)); // Json to map
   if (data.id.length < 4) {
-    responseGen.generateNegativeReponse(
+    responseGen.generateNegativeResponse(
       req,
       res,
       "something went wrong with the payment process try again!",
@@ -88,11 +88,11 @@ const paymentCall = async (req, res) => {
     })
     .then(async function () {
       console.log("success");
-      purchaseItemsForUser(items, req.session.userName);
+      purchaseItemsForUser(req,res,items, req.session.userName);
     })
     .catch(function () {
       console.log("failes");
-      responseGen.generateNegativeReponse(
+      responseGen.generateNegativeResponse(
         req,
         res,
         "Payment Can't be made right now",
@@ -101,14 +101,14 @@ const paymentCall = async (req, res) => {
       );
     });
 };
-const itemsPurchased = (req, res) => {
+const itemsDelivered= (req, res) => {
   if (req.session.authenticated) {
     const sql = `SELECT * FROM ORDERS WHERE username='${req.session.userName}' and status = 1`;
 
     dbConnection.query(sql, async (error, result) => {
       if (result) {
         var size = result.length;
-        responseGen.generatePositiveReponse(
+        responseGen.generatePositiveResponse(
           req,
           res,
           "records fetched successfully",
@@ -117,7 +117,7 @@ const itemsPurchased = (req, res) => {
           200
         );
       } else {
-        responseGen.generateNegativeReponse(
+        responseGen.generateNegativeResponse(
           req,
           res,
           "something might happened wrong with my sql query",
@@ -127,7 +127,7 @@ const itemsPurchased = (req, res) => {
       }
     });
   } else {
-    responseGen.generateNegativeReponse(
+    responseGen.generateNegativeResponse(
       req,
       res,
       "failed",
@@ -137,4 +137,4 @@ const itemsPurchased = (req, res) => {
   }
 };
 
-module.exports = { itemsPurchased, paymentCall };
+module.exports = { itemsDelivered, paymentCall };

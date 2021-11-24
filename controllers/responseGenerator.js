@@ -1,4 +1,4 @@
-const generatePositiveReponse = (req, res, message, data, count, code) => {
+const generatePositiveResponse = (req, res, message, data, count, code) => {
   return res.status(code).send({
     success: 1,
     message: message,
@@ -15,4 +15,4 @@ const generateNegativeResponse = (req, res, message, error, code) => {
   });
 };
 
-module.exports = { generateNegativeResponse, generatePositiveReponse };
+module.exports = { generateNegativeResponse, generatePositiveResponse };

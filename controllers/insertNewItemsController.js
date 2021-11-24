@@ -1,17 +1,16 @@
-// structuring done
-// reponse added
 const responseGen = require("./responseGenerator");
 const dbConnection = require("../databaseConnection");
-const itemsForSell = (req, res) => {
-  if (req.session.authenticated) {
-    const sql = "SELECT * FROM ITEMS;";
+const insertNewItem = (req, res) => {
+    //TODO: make this function like that it can insert multiple data at a single time sent by user
+  //if (req.session.authenticated) {
+    const sql = "INSERT INTO ITEMS VALUES('pizza',23);";
     dbConnection.query(sql, async (error, result) => {
       if (result) {
         var size = result.length;
         responseGen.generatePositiveResponse(
           req,
           res,
-          "records fetched successfully",
+          "record added successfully",
           result,
           size,
           200
@@ -26,15 +25,15 @@ const itemsForSell = (req, res) => {
         );
       }
     });
-  } else {
-    responseGen.generateNegativeResponse(
-      req,
-      res,
-      "failed",
-      `either you are not authorized or you have not logged in!`,
-      401
-    );
-  }
+//   } else {
+//     responseGen.generateNegativeResponse(
+//       req,
+//       res,
+//       "failed",
+//       `either you are not authorized or you have not logged in!`,
+//       401
+//     );
+//   }
 };
 
-module.exports = { itemsForSell };
+module.exports = { insertNewItem };

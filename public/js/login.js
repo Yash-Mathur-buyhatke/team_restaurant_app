@@ -24,6 +24,7 @@ const submitButtonClicked = () =>{
          .then(response=> {
              if(response.success===1 && response.message==='user found') window.location = '/app/user/purchaseitems'
              if(response.success===1 && response.message==='admin found') window.location = '/app/admin/orderconfirmation'
+             if(response.success==0) alert('you are not authorized')
          })
         
     }

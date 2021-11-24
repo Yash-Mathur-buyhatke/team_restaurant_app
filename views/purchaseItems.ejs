@@ -19,11 +19,17 @@
                 <th>Quantity</th>
             </tr>
         </table>
-        <input type="text" name="address" id="address",placeholder="address for receiving">
+        <input type="text" name="pincode" id="pincode" placeholder="pincode">
+        <input type="text" name="city" id="city" placeholder="city">
+        <input type="text" name="state" id="state" placeholder="state">
+        <input type="text" name="country" id="country" placeholder="country">
         <p>Total: <h4 id="total">0</h4></p>
 
         <button type="button" id="btn" onclick="makePayment()">Pay</button>
-        <a href="/app/user/history"> Past order</a>
+        <a href="/app/user/history"> Delivered</a>
+        <a href="/app/user/pending"> Pending</a>
+        <a href="/app/user/canceled"> canceled</a>
+        
         
         <script src="/js/purchaseItems.js" async defer></script>
     </body>

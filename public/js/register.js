@@ -19,6 +19,12 @@ function submitButtonClicked() {
     })
      .then(data=> data.json())
      .then(response=> {
-         if(response.success===1) window.location = '/app/login'
+         if(response.success===1){
+             alert('you have been registered!')
+            window.location = '/app/login'
+         }
+         if(response.success===0){
+             alert(response.message)
+         }
      })
 }
